@@ -506,7 +506,7 @@ DBBrowserDB::db_pointer_type DBBrowserDB::get(QString user)
     if(!_db)
         return nullptr;
 
-    auto lk = waitForDbRelease();
+    waitForDbRelease();
 
     db_user = user;
     db_used = true;
@@ -514,10 +514,10 @@ DBBrowserDB::db_pointer_type DBBrowserDB::get(QString user)
     return db_pointer_type(_db, DatabaseReleaser(this));
 }
 
-std::unique_lock<std::mutex> DBBrowserDB::waitForDbRelease()
+void DBBrowserDB::waitForDbRelease()
 {
     if(!_db)
-        return std::unique_lock<std::mutex>();
+        return;
 
     std::unique_lock<std::mutex> lk(m);
     while(db_used) {
@@ -538,8 +538,6 @@ std::unique_lock<std::mutex> DBBrowserDB::waitForDbRelease()
         lk.lock();
         cv.wait(lk, [this](){ return !db_used; });
     }
-
-    return std::move(lk);
 }
 
 bool DBBrowserDB::dump(const QString& filename,
