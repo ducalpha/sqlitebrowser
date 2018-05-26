@@ -374,7 +374,6 @@ endif()
 target_link_libraries(${PROJECT_NAME}
 		qhexedit
 		qcustomplot
-		pthread
 		${QT_LIBRARIES}
 		${WIN32_STATIC_LINK}
 		${LIBSQLITE}
