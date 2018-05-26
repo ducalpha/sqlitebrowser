@@ -816,7 +816,7 @@ void MainWindow::setRecordsetLabel()
     }
     ui->labelRecordset->setText(txt);
 
-    ui->dataTable->setDisabled( m_browseTableModel->rowCountAvailable() == SqliteTableModel::RowCount::Unknown );
+    enableEditing(m_browseTableModel->rowCountAvailable() != SqliteTableModel::RowCount::Unknown, 0);
 }
 
 void MainWindow::refresh()
@@ -1653,15 +1653,18 @@ void MainWindow::activateFields(bool enable)
     remoteDock->enableButtons();
 }
 
-void MainWindow::enableEditing(bool enable_edit, bool enable_insertdelete)
+void MainWindow::enableEditing(bool enable_edit, int enable_insertdelete)
 {
     // Don't enable anything if this is a read only database
     bool edit = enable_edit && !db.readOnly();
-    bool insertdelete = enable_insertdelete && !db.readOnly();
+    bool insertdelete = enable_insertdelete == 1 && !db.readOnly();
 
     // Apply settings
-    ui->buttonNewRecord->setEnabled(insertdelete);
-    ui->buttonDeleteRecord->setEnabled(insertdelete);
+    if(enable_insertdelete)
+    {
+        ui->buttonNewRecord->setEnabled(insertdelete);
+        ui->buttonDeleteRecord->setEnabled(insertdelete);
+    }
     ui->dataTable->setEditTriggers(edit ? QAbstractItemView::SelectedClicked | QAbstractItemView::AnyKeyPressed | QAbstractItemView::EditKeyPressed : QAbstractItemView::NoEditTriggers);
 
 }

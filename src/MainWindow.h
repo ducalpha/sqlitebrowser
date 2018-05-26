@@ -179,7 +179,7 @@ private:
     void setCurrentFile(const QString& fileName);
     void addToRecentFilesMenu(const QString& filename);
     void activateFields(bool enable = true);
-    void enableEditing(bool enable_edit, bool enable_insertdelete);
+    void enableEditing(bool enable_edit, int enable_insertdelete);      // Pass -1 in enable_inserdelete to disable the buttons, 1 to enable them, and 0 to leave them as they are.
     void loadExtensionsFromSettings();
     void saveAsView(QString query);
     void duplicateRecord(int currentRow);
