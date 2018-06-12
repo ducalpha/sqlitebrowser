@@ -11,6 +11,10 @@
 #include <QImageReader>
 #include <QBuffer>
 #include <QModelIndex>
+#include <nlohmann/json.hpp>
+#include <iostream>
+// for convenience
+using json = nlohmann::json;
 
 EditDialog::EditDialog(QWidget* parent)
     : QDialog(parent),
@@ -123,12 +127,21 @@ void EditDialog::loadData(const QByteArray& data)
 
     case Text:
         switch (editMode) {
-        case TextEditor:
+        case TextEditor: {
             // The text widget buffer is now the main data source
             dataSource = TextBuffer;
 
             // Load the text into the text editor
             textData = QString::fromUtf8(data.constData(), data.size());
+            try {
+                auto j = json::parse(textData.toStdString());
+                // set text data to json dump if there is no exception
+                std::string prettified_json = j.dump(4);
+                textData = QString::fromStdString(prettified_json);
+            } catch (const std::exception& e) {
+                // do nothing to change text data
+                std::cerr << e.what();
+            }
             ui->editorText->setPlainText(textData);
 
             // Enable text editing
@@ -139,6 +152,7 @@ void EditDialog::loadData(const QByteArray& data)
 
             break;
 
+        }
         case HexEditor:
             // The hex widget buffer is now the main data source
             dataSource = HexBuffer;
